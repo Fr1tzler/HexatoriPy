@@ -1,7 +1,7 @@
 import sys
 import os
 from PyQt5 import QtWidgets, QtGui, QtCore
-from pyQt import design
+import design
 
 sys.path.append(os.path.join(sys.path[0], '../Model'))
 from hexatori_generator import get_map
@@ -117,7 +117,7 @@ class HexatoriApp(QtWidgets.QMainWindow, design.Ui_HexatoriPy):
     def get_position(self, x, y, button_width, button_height, offset):
         bw = button_width + 2
         bh = button_height * 3 // 4 + 4
-        return 15 + bw * x + offset * bw // 2, 40 + bh * y
+        return 5 + bw * x + offset * bw // 2, 40 + bh * y
 
     def hexagonize_button(self, button):
         x = button.width()
@@ -169,7 +169,7 @@ class HexatoriApp(QtWidgets.QMainWindow, design.Ui_HexatoriPy):
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
-    window = HexatoriApp(5)
+    window = HexatoriApp(20)
     app.exec_()
 
 

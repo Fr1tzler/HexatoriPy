@@ -1,6 +1,7 @@
 from additional_math import arr_copy, arr_sum, arr_diff, arr_mul
 from hexatori import Hexatori
-
+from hexatori_generator import HexatoriGenerator, get_map
+from collections import deque
 
 class HexatoriSolver(Hexatori):
     # конструктор класса решателя
@@ -197,6 +198,10 @@ class HexatoriSolver(Hexatori):
             self.clear_conflicts()
             self.set_point_w_white_conflict_neighbour_black()
             self.set_special_pairs()
+        
+    def solve_all(self):
+        self.solve()
+        self.wb_map = self.BFS()
 
     def check_for_success(self):
         for horizontal_line in range(self.arr_size):
@@ -218,3 +223,82 @@ class HexatoriSolver(Hexatori):
         for i in arr:
             merged_arr += i
         return len(list(filter(lambda x: x.isdigit(), merged_arr)))
+
+    def BFS(self):
+        temp_wb_map = arr_copy(self.wb_map)
+        field_queue = deque()
+        field_queue.append(temp_wb_map)
+        used = set()
+
+        hashing_dict = dict()
+        value = 1
+        for i in self.get_conflicts(temp_wb_map):
+            hashing_dict[i] = value
+            value *= 2
+        
+        while (len(field_queue) > 0):
+            current_elem = field_queue.popleft()
+            conflicts = self.get_conflicts(current_elem)
+            hash_value = self.hash_conflicts(hashing_dict, conflicts)
+            if hash_value in used:
+                continue
+            used.add(hash_value)
+            
+            for conflict in conflicts:
+                temp_map = arr_copy(current_elem)
+                temp_map[conflict[0]][conflict[1]] = self.white
+                temp_solver = HexatoriSolver(temp_map)
+                temp_solver.solve()
+                if temp_solver.check_for_success():
+                    return temp_solver.wb_map
+                field_queue.append(temp_map)
+        return self.wb_map
+
+    def get_conflicts(self, hex_map):
+        points = [(x, y) for x in range(self.arr_size)
+                  for y in range(self.arr_size)]
+        result = []
+        for point in points:
+            if hex_map[point[0]][point[1]].isdigit():
+                result.append(point)
+        return result
+
+    def hash_conflicts(self, hashing_dict, conflicts):
+        result = 0
+        for i in conflicts:
+            result += hashing_dict[i]
+        return result
+
+
+def main():
+    from time import time
+    for a in range(2, 100):
+        iters = 200 // int(a**1.5)
+        t = time()
+        ctra = 0
+        ctrb = 0
+        ptsa = 0
+        ptsb = 0
+        for i in range(iters):
+            ar = HexatoriSolver(get_map(a))
+            ptsb += ar.count_not_colored_points()
+            ar.solve_all()
+            if ar.check_for_success():
+                ctra += 1
+            ctrb += 1
+            ptsa += ar.count_not_colored_points()
+        print('-' * 30)
+        print('size:                 ', a)
+        print('iterations:           ', iters)
+        time_ms = time() - t
+        print('total time:           ', int(time_ms * 1000), 'ms')
+        print('time for iteration:   ', int((time_ms / iters) * 1000), 'ms')
+        print('total:                ', ctrb)
+        print('succeed:              ', ctra)
+        print('success percent:      ', int((ctra / ctrb) * 1000) / 10)
+        print('remaining points:     ', ptsa / iters)
+        print('total points:         ', ptsb/iters)
+        print('remaining percent:    ', int((ptsa / ptsb) * 100))
+
+if __name__ == "__main__":
+    main()
