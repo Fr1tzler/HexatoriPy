@@ -1,4 +1,4 @@
-from additional_math import *
+from additional_math import arr_copy, arr_sum, arr_diff, arr_mul
 from hitori_generator import foo
 
 
@@ -254,7 +254,7 @@ class HitoriSolver:
     def solve(self):
         self.set_uniques_white()
         self.set_nearly_to_pairs()
-        for iteration in range(2):
+        for iteration in range(4):
             self.set_point_whose_conflict_is_white()
             self.set_point_wo_neighbours_black()
             self.clear_conflicts()
@@ -286,6 +286,7 @@ class HitoriSolver:
 
 if __name__ == "__main__":
     main()
+
 def main():
     from time import time
     for a in range(2, 100):
