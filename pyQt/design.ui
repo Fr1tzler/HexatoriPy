@@ -98,45 +98,6 @@
     </property>
    </widget>
   </widget>
-  <widget class="QMenuBar" name="menuBar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>800</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menuFile">
-    <property name="title">
-     <string>Game</string>
-    </property>
-    <addaction name="actionSet_size"/>
-    <addaction name="separator"/>
-    <addaction name="actionUndo"/>
-    <addaction name="actionRedo"/>
-   </widget>
-   <widget class="QMenu" name="menuSetings">
-    <property name="title">
-     <string>Settings</string>
-    </property>
-    <addaction name="actionEdit_colors"/>
-   </widget>
-   <widget class="QMenu" name="menuHint">
-    <property name="title">
-     <string>Hint</string>
-    </property>
-   </widget>
-   <widget class="QMenu" name="menuDemo">
-    <property name="title">
-     <string>Demo</string>
-    </property>
-   </widget>
-   <addaction name="menuFile"/>
-   <addaction name="menuSetings"/>
-   <addaction name="menuHint"/>
-   <addaction name="menuDemo"/>
-  </widget>
   <action name="actionSet_size">
    <property name="text">
     <string>Set size</string>

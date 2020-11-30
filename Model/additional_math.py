@@ -1,6 +1,6 @@
 def arr_sum(arr1, arr2):
     longer_arr = arr1 if len(arr1) >= len(arr2) else arr2
-    return [x + y for x, y in zip(arr1,arr2)] + longer_arr[min(len(arr1), len(arr2)):]
+    return [x + y for x, y in zip(arr1, arr2)] + longer_arr[min(len(arr1), len(arr2)):]
 
 
 def arr_diff(arr1, arr2):
