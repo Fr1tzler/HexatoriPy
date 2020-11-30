@@ -9,17 +9,21 @@ import hitori_generator
 
 
 class HexatoriApp(QtWidgets.QMainWindow, design.Ui_HexatoriPy):
-    black = 'b'
-    white = 'w'
+
+    black_color = "#00665E"
+    background_color = "#33CEC3"
+    checked_color = "#FF9340"
+    unchecked_color = "#FFB073"
 
     def __init__(self, map_size):
         super().__init__()
         self.setupUi(self)
-        self.setStyleSheet("background-color: grey")
-        self.size = QtCore.QSize(1000, 1000)
+        self.setStyleSheet("background-color:"+self.background_color+";")
+
         self.ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
         self.map_size = map_size
         self.array_size = map_size * 2 - 1
+
         self.init_buttons()
         self.buttons = []
         self.generate_map()
@@ -27,10 +31,17 @@ class HexatoriApp(QtWidgets.QMainWindow, design.Ui_HexatoriPy):
         self.show()
 
     def init_buttons(self):
+        self.newGameButton.move(700, 100)
         self.init_button(self.newGameButton, self.newGameClick, 'obeme.jpg', "new game")
+        self.hintButton.move(635, 195)
         self.init_button(self.hintButton, self.hintClick, 'obeme.jpg', "hint")
+        self.solveButton.move(700, 290)
         self.init_button(self.solveButton, self.solveClick, 'obeme.jpg', "solve")
+        self.blackButton.move(-30, 450)
+        self.blackButton.resize(100, 100)
         self.init_button(self.blackButton, self.switchBlackClick, 'obeme.jpg', "black")
+        self.whiteButton.move(23, 530)
+        self.whiteButton.resize(100, 100)
         self.init_button(self.whiteButton, self.switchWhiteClick, 'obeme.jpg', "white")
 
     def init_button(self, button, onclick, iconName, text):
@@ -39,20 +50,19 @@ class HexatoriApp(QtWidgets.QMainWindow, design.Ui_HexatoriPy):
         #button.setIconSize(QtCore.QSize(120, 120))
         button.setText(text)
         self.hexagonize_button(button)
+        button.setStyleSheet("background-color:"+self.black_color+";")
+
         button.clicked.connect(onclick)
 
     def newGameClick(self):
-        print("new game clicked")
         self.generate_map()
 
     def hintClick(self):
-        print("hint clicked")
+        pass
 
     def solveClick(self):
         self.solver.solve()
-        print(self.solver.wb_array)
         self.update_map(self.solver.wb_array)
-        print("solve clicked")
 
     def switchWhiteClick(self):
         self.mode = 1
@@ -67,16 +77,13 @@ class HexatoriApp(QtWidgets.QMainWindow, design.Ui_HexatoriPy):
         self.buttons = []
 
     def update_map(self, wb_map):
-        print(wb_map)
-        print(self.array_size)
-        for y in range(self.array_size):
-            for x in range(self.array_size):
-                value = self.hex_map[x][y]
-                button_id = y * self.array_size + x
-                if value == 'b':
-                    self.buttons[button_id].setStyleSheet("background-color: black; color: white")
-                elif value == 'w':
-                    self.buttons[button_id].setStyleSheet("background-color: white; color: black")
+        for x in range(self.array_size):
+            for y in range(self.array_size):
+                value = wb_map[x][y]
+                if value == self.solver.black:
+                    self.set_tile_black(x, y)
+                elif value == self.solver.white:
+                    self.set_tile_white(x, y)
 
     def generate_map(self):
         self.clear_map()
@@ -87,8 +94,8 @@ class HexatoriApp(QtWidgets.QMainWindow, design.Ui_HexatoriPy):
         self.array_size = len(self.hex_map)
         offset = (self.array_size - 1) // 2
 
-        button_width = 500 // self.array_size - 3
-        button_height = 500 // self.array_size
+        button_width = 600 // self.array_size - 2
+        button_height = 600 // self.array_size
 
         for y in range(self.array_size):
             offset = y - self.map_size + 1
@@ -103,7 +110,8 @@ class HexatoriApp(QtWidgets.QMainWindow, design.Ui_HexatoriPy):
                         button_height, offset))
                 self.hexagonize_button(button)
                 self.buttons.append(button)
-                button.setStyleSheet("background-color: yellow; color: black")
+                button.setStyleSheet("background-color:" + self.unchecked_color + "; color: black;")
+                button.setFont(QtGui.QFont("Ubuntu BOLD", 200 // self.array_size))
                 button.show()
         for y in range(self.array_size):
             for x in range(self.array_size):
@@ -114,9 +122,9 @@ class HexatoriApp(QtWidgets.QMainWindow, design.Ui_HexatoriPy):
                     lambda temp, arg=button_id: self.tile_click(arg))
 
     def get_position(self, x, y, button_width, button_height, offset):
-        bw = button_width + 3
-        bh = button_height * 3 // 4 + 3
-        return 50 + bw * x + offset * bw // 2, 50 + bh * y
+        bw = button_width + 2
+        bh = button_height * 3 // 4 + 4
+        return 15 + bw * x + offset * bw // 2, 40 + bh * y
 
     def hexagonize_button(self, button):
         x = button.width()
@@ -137,24 +145,28 @@ class HexatoriApp(QtWidgets.QMainWindow, design.Ui_HexatoriPy):
             if not self.set_tile_black(x, y):
                 self.alert("impossible to set tile black")
         else:
-            if not self.set_tile_while(x, y):
+            if not self.set_tile_white(x, y):
                 self.alert("impossible to set tile white")
 
     def set_tile_black(self, x, y):
-        self.buttons[y * self.array_size + x].setStyleSheet("background-color: black; color: white")
+        # проверить в wb_map, можно ли
+        self.buttons[y * self.array_size + x].setStyleSheet("background-color:"+self.black_color+"; color: white;")
         return True
 
-    def set_tile_while(self, x, y):
-        self.buttons[y * self.array_size + x].setStyleSheet("background-color: white; color: black")
+    def set_tile_white(self, x, y):
+        # проверить в wb_map, можно ли
+        self.buttons[y * self.array_size + x].setStyleSheet("background-color:"+self.checked_color+"; color: black;")
         return True
 
     def alert(self, message):
         print(message)
 
+    def check_game(self):
+        pass
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
-    window = HexatoriApp(3)
+    window = HexatoriApp(10)
     app.exec_()
 
 if __name__ == "__main__":
@@ -163,7 +175,6 @@ if __name__ == "__main__":
 
 """
 TODO
-solve button
-menu
-color design
+refactor
+solver fixes
 """
