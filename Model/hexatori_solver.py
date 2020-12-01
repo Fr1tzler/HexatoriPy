@@ -270,7 +270,7 @@ class HexatoriSolver(Hexatori):
         return result
 
 
-def main():
+def test():
     from time import time
     for a in range(2, 100):
         iters = 200 // int(a**1.5)
@@ -301,4 +301,4 @@ def main():
         print('remaining percent:    ', int((ptsa / ptsb) * 100))
 
 if __name__ == "__main__":
-    main()
+    test()
