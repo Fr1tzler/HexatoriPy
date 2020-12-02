@@ -3,6 +3,7 @@ from hexatori import Hexatori
 from hexatori_generator import HexatoriGenerator, get_map
 from collections import deque
 
+
 class HexatoriSolver(Hexatori):
     # конструктор класса решателя
     def __init__(self, hex_map):
@@ -104,6 +105,10 @@ class HexatoriSolver(Hexatori):
         self.wb_map[point[0]][point[1]] = self.white
         return True
 
+    def set_point_neutral(self, point):
+        self.wb_map[point[0]][point[1]] = self.hex_map[point[0]][point[1]]
+        return True
+
     # возвращает значения клеток из указанной карты
     def get_point_values(self, hex_map, points):
         res = []
@@ -198,7 +203,7 @@ class HexatoriSolver(Hexatori):
             self.clear_conflicts()
             self.set_point_w_white_conflict_neighbour_black()
             self.set_special_pairs()
-        
+
     def solve_all(self):
         self.solve()
         self.wb_map = self.BFS()
@@ -235,7 +240,7 @@ class HexatoriSolver(Hexatori):
         for i in self.get_conflicts(temp_wb_map):
             hashing_dict[i] = value
             value *= 2
-        
+
         while (len(field_queue) > 0):
             current_elem = field_queue.popleft()
             conflicts = self.get_conflicts(current_elem)
@@ -243,7 +248,7 @@ class HexatoriSolver(Hexatori):
             if hash_value in used:
                 continue
             used.add(hash_value)
-            
+
             for conflict in conflicts:
                 temp_map = arr_copy(current_elem)
                 temp_map[conflict[0]][conflict[1]] = self.white
@@ -269,6 +274,14 @@ class HexatoriSolver(Hexatori):
             result += hashing_dict[i]
         return result
 
+    def update_map(self):
+        for x in range(self.arr_size):
+            for y in range(self.arr_size):
+                if not self.point_inside([x, y]):
+                    continue
+                if self.color_at([x, y]) == self.black:
+                    for point in self.get_point_neighbours([x, y]):
+                        self.wb_map[point[0]][point[1]] = self.white
 
 def test():
     from time import time
@@ -299,6 +312,7 @@ def test():
         print('remaining points:     ', ptsa / iters)
         print('total points:         ', ptsb/iters)
         print('remaining percent:    ', int((ptsa / ptsb) * 100))
+
 
 if __name__ == "__main__":
     test()

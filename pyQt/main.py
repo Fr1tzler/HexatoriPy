@@ -28,6 +28,7 @@ class HexatoriApp(QtWidgets.QMainWindow, design.Ui_HexatoriPy, Hexatori):
         self.init_buttons()
         self.init_size_slider()
         self.buttons = []
+        self.undo = []
         self.generate_map()
         self.mode = 0
         self.show()
@@ -41,6 +42,8 @@ class HexatoriApp(QtWidgets.QMainWindow, design.Ui_HexatoriPy, Hexatori):
     def init_buttons(self):
         self.newGameButton.move(690, 100)
         self.init_button(self.newGameButton, self.new_game_click, "New game")
+        self.hintButton.move(627, 195)
+        self.init_button(self.hintButton, self.hint_click, "Hint")
         self.solveButton.move(690, 290)
         self.init_button(self.solveButton, self.solve_click, "Solve")
         self.blackButton.move(-20, 450)
@@ -49,6 +52,9 @@ class HexatoriApp(QtWidgets.QMainWindow, design.Ui_HexatoriPy, Hexatori):
         self.whiteButton.move(33, 530)
         self.whiteButton.resize(100, 100)
         self.init_button(self.whiteButton, self.switch_white_click, "White")
+        self.undoButton.move(627, 305)
+        self.undoButton.resize(57, 57)
+        self.init_button(self.undoButton, self.undo_click, "Undo")
 
     def init_button(self, button, onclick, text):
         button.setText(text)
@@ -66,13 +72,29 @@ class HexatoriApp(QtWidgets.QMainWindow, design.Ui_HexatoriPy, Hexatori):
             self.generate_map() 
         self.new_game = not self.new_game
 
+    def undo_click(self):
+        # доделать
+        print('-'*10)
+        for i in self.undo:
+            print(i)
+        if len(self.undo) != 0:
+            points = self.undo.pop()
+            for point in points:
+                self.buttons[point[1] * self.array_size + point[0]].setStyleSheet(self.unchecked_style)
+                self.solver.set_point_neutral(point)
+        
+        self.solver.update_map()
+        self.update_map(self.solver.wb_map)
+
     def change_slider_visibility(self, value):
+        self.hintButton.setVisible(not value)
+        self.groupBox.setVisible(value)
         self.size_label.setVisible(value)
         self.horizontalSlider.setVisible(value)
 
     def init_size_slider(self):
         self.groupBox.resize(120, 120)
-        self.groupBox.move(625, 195)
+        self.groupBox.move(627, 195)
         self.hexagonize_button(self.groupBox)
         self.groupBox.setStyleSheet(self.black_style + "border: none;")
         
@@ -101,8 +123,8 @@ class HexatoriApp(QtWidgets.QMainWindow, design.Ui_HexatoriPy, Hexatori):
         self.size_label.setText(str(value))
         self.map_size = value
 
-    def hintClick(self):
-        pass
+    def hint_click(self):
+        self.alert("HINT")
 
     def solve_click(self):
         self.solver.solve()
@@ -124,10 +146,11 @@ class HexatoriApp(QtWidgets.QMainWindow, design.Ui_HexatoriPy, Hexatori):
         for x in range(self.array_size):
             for y in range(self.array_size):
                 value = wb_map[x][y]
+                id = y * self.array_size + x
                 if value == self.solver.black:
-                    self.set_tile_black(x, y)
+                    self.buttons[id].setStyleSheet(self.black_style)
                 elif value == self.solver.white:
-                    self.set_tile_white(x, y)
+                    self.buttons[id].setStyleSheet(self.checked_style)
 
     def generate_map(self):
         self.mode = 0
@@ -162,7 +185,7 @@ class HexatoriApp(QtWidgets.QMainWindow, design.Ui_HexatoriPy, Hexatori):
     def get_position(self, x, y, button_width, button_height, offset):
         bw = button_width + 1
         bh = button_height * 3 // 4 + 3
-        return 5 + bw * x + offset * bw // 2, 40 + bh * y
+        return 20 + bw * x + offset * bw // 2, 40 + bh * y
 
     def hexagonize_button(self, button):
         x = button.width()
@@ -193,13 +216,18 @@ class HexatoriApp(QtWidgets.QMainWindow, design.Ui_HexatoriPy, Hexatori):
         status = self.solver.set_point_black([x, y])
         if status:
             self.buttons[y * self.array_size + x].setStyleSheet(self.black_style)
-        for neighbour in self.solver.get_point_neighbours([x, y]):
-            self.buttons[neighbour[1] * self.array_size + neighbour[0]].setStyleSheet(self.checked_style)
+            colored_tiles = [[x, y]]
+            for point in self.solver.get_point_neighbours([x, y]):
+                id = point[1] * self.array_size + point[0]
+                colored_tiles.append(point)
+                self.buttons[id].setStyleSheet(self.checked_style)
+            self.undo.append(colored_tiles)
         return status
 
     def set_tile_white(self, x, y):
         status = self.solver.set_point_white([x, y])
         if status:
+            self.undo.append([[x, y]])
             self.buttons[y * self.array_size + x].setStyleSheet(self.checked_style)
         return status
 
@@ -224,4 +252,6 @@ if __name__ == "__main__":
 """
 TODO
 alert()
+hint_button()
+background style
 """
