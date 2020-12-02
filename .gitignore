@@ -130,4 +130,5 @@ dmypy.json
 
 #other
 temp.py
-
+.vscode
+.idea
