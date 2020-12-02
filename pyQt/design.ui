@@ -45,19 +45,6 @@
      <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="hintButton">
-    <property name="geometry">
-     <rect>
-      <x>640</x>
-      <y>240</y>
-      <width>120</width>
-      <height>120</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
    <widget class="QPushButton" name="solveButton">
     <property name="geometry">
      <rect>
@@ -95,6 +82,58 @@
     </property>
     <property name="text">
      <string>white</string>
+    </property>
+   </widget>
+   <widget class="QGroupBox" name="groupBox">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>260</y>
+      <width>108</width>
+      <height>82</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>60</height>
+     </size>
+    </property>
+    <property name="title">
+     <string/>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout"/>
+   </widget>
+   <widget class="QLabel" name="size_label">
+    <property name="geometry">
+     <rect>
+      <x>540</x>
+      <y>220</y>
+      <width>84</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>30</height>
+     </size>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+   </widget>
+   <widget class="QSlider" name="horizontalSlider">
+    <property name="geometry">
+     <rect>
+      <x>510</x>
+      <y>280</y>
+      <width>84</width>
+      <height>15</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
     </property>
    </widget>
   </widget>
