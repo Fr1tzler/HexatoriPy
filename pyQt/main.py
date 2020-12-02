@@ -15,13 +15,14 @@ class HexatoriApp(QtWidgets.QMainWindow, design.Ui_HexatoriPy, Hexatori):
     unchecked_color = "#DF8330"
     checked_color = "#FFB073"
 
-    def __init__(self, map_size):
+    def __init__(self, map_size = 5):
         super().__init__()
         self.setupUi(self)
 
         self.map_size = map_size
         self.array_size = map_size * 2 - 1
 
+        self.new_game = True
         self.init_styles()
         self.groupBox.setStyleSheet(self.checked_style)        
         self.init_buttons()
@@ -38,49 +39,62 @@ class HexatoriApp(QtWidgets.QMainWindow, design.Ui_HexatoriPy, Hexatori):
         self.setStyleSheet("background-color:" + self.background_color + ";")
 
     def init_buttons(self):
-        self.newGameButton.move(700, 100)
-        self.init_button(self.newGameButton, self.new_game_click, "new game")
-        self.solveButton.move(700, 290)
-        self.init_button(self.solveButton, self.solve_click, "solve")
-        self.blackButton.move(-30, 450)
+        self.newGameButton.move(690, 100)
+        self.init_button(self.newGameButton, self.new_game_click, "New game")
+        self.solveButton.move(690, 290)
+        self.init_button(self.solveButton, self.solve_click, "Solve")
+        self.blackButton.move(-20, 450)
         self.blackButton.resize(100, 100)
-        self.init_button(self.blackButton, self.switch_black_click, "black")
-        self.whiteButton.move(23, 530)
+        self.init_button(self.blackButton, self.switch_black_click, "Black")
+        self.whiteButton.move(33, 530)
         self.whiteButton.resize(100, 100)
-        self.init_button(self.whiteButton, self.switch_white_click, "white")
+        self.init_button(self.whiteButton, self.switch_white_click, "White")
 
     def init_button(self, button, onclick, text):
         button.setText(text)
         self.hexagonize_button(button)
         button.setStyleSheet(self.black_style)
         button.clicked.connect(onclick)
+        button.setFont(QtGui.QFont("Ubuntu BOLD", 12))
 
     def new_game_click(self):
-        #self.slider.setVisible(True) ###
-        self.generate_map()
+        self.change_slider_visibility(self.new_game)
+        if (self.new_game):
+            self.newGameButton.setText("Continue?")
+        else:
+            self.newGameButton.setText("New game")
+            self.generate_map() 
+        self.new_game = not self.new_game
+
+    def change_slider_visibility(self, value):
+        self.size_label.setVisible(value)
+        self.horizontalSlider.setVisible(value)
 
     def init_size_slider(self):
         self.groupBox.resize(120, 120)
-        self.groupBox.move(635, 195)
+        self.groupBox.move(625, 195)
         self.hexagonize_button(self.groupBox)
-        self.groupBox.setStyleSheet(self.black_style)
+        self.groupBox.setStyleSheet(self.black_style + "border: none;")
         
-        temp_stylesheet = "color: white; background-color:" + self.black_color + ";"
+        temp_stylesheet = "color: white; background-color:{};".format(self.black_color)
 
         self.size_label.setText("5")
         self.size_label.setFont(QtGui.QFont("Ubuntu BOLD", 20))
         self.size_label.setStyleSheet(temp_stylesheet)
-        self.size_label.move(685, 220)
+        self.size_label.move(675, 220)
         self.size_label.resize(60, 30)
         self.size_label.show()
 
         self.horizontalSlider.setMinimum(3)
         self.horizontalSlider.setMaximum(10)
         self.horizontalSlider.setSingleStep(1)
+        self.horizontalSlider.setValue(self.map_size)
         self.horizontalSlider.valueChanged.connect(self.slider_change)
         self.horizontalSlider.resize(110, 20)
         self.horizontalSlider.setStyleSheet(temp_stylesheet)
-        self.horizontalSlider.move(640, 260)
+        self.horizontalSlider.move(630, 260)
+
+        self.change_slider_visibility(False)
 
     def slider_change(self):
         value = self.horizontalSlider.value()
@@ -200,7 +214,7 @@ class HexatoriApp(QtWidgets.QMainWindow, design.Ui_HexatoriPy, Hexatori):
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
-    HexatoriApp(4)
+    HexatoriApp()
     app.exec_()
 
 

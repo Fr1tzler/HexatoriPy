@@ -88,7 +88,7 @@
     <property name="geometry">
      <rect>
       <x>640</x>
-      <y>260</y>
+      <y>250</y>
       <width>108</width>
       <height>82</height>
      </rect>
@@ -108,7 +108,7 @@
     <property name="geometry">
      <rect>
       <x>540</x>
-      <y>220</y>
+      <y>280</y>
       <width>84</width>
       <height>30</height>
      </rect>
@@ -126,8 +126,8 @@
    <widget class="QSlider" name="horizontalSlider">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>280</y>
+      <x>530</x>
+      <y>310</y>
       <width>84</width>
       <height>15</height>
      </rect>

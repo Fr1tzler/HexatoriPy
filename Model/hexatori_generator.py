@@ -8,7 +8,7 @@ from hexatori import Hexatori
 class HexatoriGenerator(Hexatori):
     def set_black_tiles(self):
         remaining_amount = int(self.edge_size ** 2 // 3)
-        while(remaining_amount > 0):
+        while(self.count_empty_cells() > 0):
             x = randint(0, self.arr_size - 1)
             y = randint(0, self.arr_size - 1)
             if self.hex_map[y][x] == self.empty:
