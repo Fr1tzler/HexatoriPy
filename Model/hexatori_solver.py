@@ -206,6 +206,8 @@ class HexatoriSolver(Hexatori):
 
     def solve_all(self):
         self.solve()
+        if self.check_for_success():
+            return
         self.wb_map = self.BFS()
 
     def check_for_success(self):
@@ -230,6 +232,7 @@ class HexatoriSolver(Hexatori):
         return len(list(filter(lambda x: x.isdigit(), merged_arr)))
 
     def BFS(self):
+        pass
         temp_wb_map = arr_copy(self.wb_map)
         field_queue = deque()
         field_queue.append(temp_wb_map)
@@ -286,7 +289,7 @@ class HexatoriSolver(Hexatori):
 def test():
     from time import time
     for a in range(2, 100):
-        iters = 200 // int(a**1.5)
+        iters = 100# 2000 // int(a ** 1.5) #00 // int(a**1.5)
         t = time()
         ctra = 0
         ctrb = 0
@@ -311,7 +314,7 @@ def test():
         print('success percent:      ', int((ctra / ctrb) * 1000) / 10)
         print('remaining points:     ', ptsa / iters)
         print('total points:         ', ptsb/iters)
-        print('remaining percent:    ', int((ptsa / ptsb) * 100))
+        print('remaining percent:    ', (ptsa / ptsb) * 100)
 
 
 if __name__ == "__main__":

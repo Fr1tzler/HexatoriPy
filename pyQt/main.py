@@ -1,7 +1,7 @@
 import sys
 import os
 from PyQt5 import QtWidgets, QtGui, QtCore
-from PyQt5.QtWidgets import QMainWindow, QShortcut, QApplication
+from PyQt5.QtWidgets import QMainWindow, QShortcut, QApplication, QMessageBox
 from PyQt5.QtGui import QKeySequence, QFont, QPolygon, QRegion
 from PyQt5.QtCore import QPoint
 from design import Ui_HexatoriPy
@@ -35,6 +35,7 @@ class HexatoriApp(QMainWindow, Ui_HexatoriPy, Hexatori):
         self.mode = 0
         self.shortcut = QShortcut(QKeySequence("Ctrl+Z"), self)
         self.shortcut.activated.connect(self.undo_click)
+
         self.show()
 
     def init_styles(self):
@@ -131,7 +132,8 @@ class HexatoriApp(QMainWindow, Ui_HexatoriPy, Hexatori):
         self.alert("HINT")
 
     def solve_click(self):
-        self.solver.solve()
+        self.solver = HexatoriSolver(self.hex_map)
+        self.solver.solve_all()
         self.update_map(self.solver.wb_map)
 
     def switch_white_click(self):
@@ -225,10 +227,17 @@ class HexatoriApp(QMainWindow, Ui_HexatoriPy, Hexatori):
         colored_tiles = [[x, y]]
         for point in self.solver.get_point_neighbours([x, y]):
             id = point[1] * self.array_size + point[0]
-            colored_tiles.append(point)
+            if not self.tile_in_undo(point):
+                colored_tiles.append(point)
             self.buttons[id].setStyleSheet(self.checked_style)
         self.undo.append(colored_tiles)
         return True
+
+    def tile_in_undo(self, tile):
+        for action in self.undo:
+            if tile in action:
+                return True
+        return False
 
     def set_tile_white(self, x, y):
         if not self.solver.set_point_white([x, y]):
@@ -238,13 +247,12 @@ class HexatoriApp(QMainWindow, Ui_HexatoriPy, Hexatori):
         return True
 
     def alert(self, message):
-        print(message)
+        QMessageBox.question(self, 'Message from Hexatori', message, QMessageBox.Ok)
 
     def check_game(self):
         if self.solver.check_for_success():
             self.alert("YOU WIN")
             self.mode = -1
-
 
 def main():
     app = QApplication(sys.argv)
@@ -257,7 +265,7 @@ if __name__ == "__main__":
 
 """
 TODO
-alert()
 hint_button()
+solver чёт дурит
 background style
 """
